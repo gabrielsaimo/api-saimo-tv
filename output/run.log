@@ -1,0 +1,47 @@
+
+🎬  SAIMO TV — Gerador de SQL para Supabase
+    https://sfumaypqhxzjssarmyrn.supabase.co
+
+
+────────────────────────────────────────────────────────
+  PASSO 1 — Buscando M3U
+────────────────────────────────────────────────────────
+   [1/1] Baixando: https://raw.githubusercontent.com/Ramys/Iptv-Brasil-2026/refs/heads/master/CanaisBR04.m3u ... OK — 241864 novos (241864 únicos acumulados)
+
+✅  241864 itens VOD encontrados.
+
+────────────────────────────────────────────────────────
+  PASSO 2 — Categorizando itens
+────────────────────────────────────────────────────────
+   📽️  Filmes:     20004
+   📺  Séries:     7163
+   🎞️  Episódios:  221860
+
+────────────────────────────────────────────────────────
+  PASSO 3 — Enriquecimento TMDB
+────────────────────────────────────────────────────────
+   ⚡  Carregando dados TMDB do cache (enriched-cache.json)...
+   ✅  Cache aplicado: 23044 itens com dados TMDB.
+
+────────────────────────────────────────────────────────
+  PASSO 4 — Gerando SQL
+────────────────────────────────────────────────────────
+   📄  01_schema.sql  — 3.8 KB
+   📄  02_data.sql    — 94.02 MB
+
+────────────────────────────────────────────────────────
+  CONCLUÍDO
+────────────────────────────────────────────────────────
+   Itens gerados:
+     Filmes:     20004
+     Séries:     7163
+     Episódios:  221860
+
+   ⚠️  O arquivo 02_data.sql é grande (> 5 MB).
+      Se o Supabase SQL Editor recusar, use o CLI:
+      psql "postgresql://postgres:[senha]@db.sfumaypqhxzjssarmyrn.supabase.co:5432/postgres" -f output/02_data.sql
+
+   Suba no Supabase nessa ordem:
+     1. output/01_schema.sql
+     2. output/02_data.sql
+

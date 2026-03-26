@@ -1,0 +1,20 @@
+{
+  "name": "saimo-tv-sql-generator",
+  "version": "1.0.0",
+  "description": "Gera SQL para upload no Supabase a partir de fontes M3U com enriquecimento TMDB",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "generate": "node index.js",
+    "generate:no-enrich": "SKIP_ENRICH=true node index.js",
+    "generate:test": "ITEM_LIMIT=200 SKIP_ENRICH=true node index.js",
+    "split": "node split-sql.js",
+    "split:2mb": "node split-sql.js 2"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
