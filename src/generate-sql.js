@@ -188,12 +188,18 @@ const CONTENT_UPSERT = [
 
 function contentRow(item) {
     const t = item.tmdb || {};
+    let finalCategory = item.category;
+    if (finalCategory && finalCategory.toLowerCase() === 'outros') {
+        if (t.genres && t.genres.length > 0) {
+            finalCategory = t.genres[0];
+        }
+    }
     return [
         str(item.id),
         str(item.name),
         str(item.url),
         bool(item.active),
-        str(item.category),
+        str(finalCategory),
         str(item.type),
         bool(item.isAdult),
         str(item.logo),
@@ -259,12 +265,17 @@ function epRow(ep, seriesId) {
 /** Flatten de episódios de todas as séries + geração de INSERTs. */
 function generateEpisodeInserts(seriesArr) {
     const allEps = [];
+    const seen = new Set();
     for (const s of seriesArr) {
         if (!s.episodes) continue;
         for (const [seasonKey, eps] of Object.entries(s.episodes)) {
             const season = parseInt(seasonKey);
             for (const ep of eps) {
-                allEps.push({ ...ep, season, _seriesId: s.id });
+                const key = `${s.id}-${season}-${ep.episode}`;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    allEps.push({ ...ep, season, _seriesId: s.id });
+                }
             }
         }
     }
@@ -293,8 +304,15 @@ function generateEpisodeInserts(seriesArr) {
  * @returns {string}
  */
 function generateData(movies, series) {
-    const totalEpisodes = series.reduce((acc, s) =>
-        acc + Object.values(s.episodes || {}).reduce((a, e) => a + e.length, 0), 0);
+    const uniqueMovies = Array.from(new Map(movies.map(m => [m.id, m])).values());
+    const uniqueSeries = Array.from(new Map(series.map(s => [s.id, s])).values());
+
+    const totalEpisodes = uniqueSeries.reduce((acc, s) =>
+        acc + Object.values(s.episodes || {}).reduce((a, e) => {
+            // Conta rápida de episódios únicos (por garantia visual, a deduplicação real ocorre no insert)
+            const seen = new Set(e.map(ep => ep.episode));
+            return a + seen.size;
+        }, 0), 0);
 
     const header = `-- ================================================================
 -- SAIMO TV — Dados para Supabase
@@ -308,23 +326,23 @@ function generateData(movies, series) {
 -- ================================================================
 `;
 
-    const movieSection = movies.length === 0 ? '' : `
+    const movieSection = uniqueMovies.length === 0 ? '' : `
 -- ============================================================
--- FILMES (${movies.length})
+-- FILMES (${uniqueMovies.length})
 -- ============================================================
-${generateContentInserts(movies)}`;
+${generateContentInserts(uniqueMovies)}`;
 
-    const seriesSection = series.length === 0 ? '' : `
+    const seriesSection = uniqueSeries.length === 0 ? '' : `
 -- ============================================================
--- SÉRIES (${series.length})
+-- SÉRIES (${uniqueSeries.length})
 -- ============================================================
-${generateContentInserts(series)}`;
+${generateContentInserts(uniqueSeries)}`;
 
     const episodeSection = totalEpisodes === 0 ? '' : `
 -- ============================================================
 -- EPISÓDIOS (${totalEpisodes})
 -- ============================================================
-${generateEpisodeInserts(series)}`;
+${generateEpisodeInserts(uniqueSeries)}`;
 
     return [header, movieSection, seriesSection, episodeSection].join('\n');
 }

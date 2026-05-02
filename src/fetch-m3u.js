@@ -123,6 +123,10 @@ function parseM3UText(text, seenNames) {
 
         } else if (line && !line.startsWith('#')) {
             if (current.name && isMediaFile(line)) {
+                if (line.includes('play.dnsrot.vip')) {
+                    current = {};
+                    continue;
+                }
                 const normName = normalizeName(current.name);
                 if (!seenNames.has(normName)) {
                     seenNames.add(normName);
@@ -198,14 +202,23 @@ function categorizeM3UItems(items, limit) {
             const seriesKey = normalizeName(seriesName);
 
             if (!seriesMap[seriesKey]) {
-                const category = mapGroupToCategory(item.group);
+                let category = mapGroupToCategory(item.group) || item.group;
+                let isAdult = isAdultGroup(item.group);
+
+                if (seriesName.includes('[XXX]')) {
+                    category = 'Adultos';
+                    isAdult = true;
+                } else if (seriesName.includes('[L]') || seriesName.includes('(L)')) {
+                    category = 'legendado';
+                }
+
                 seriesMap[seriesKey] = {
                     id:       generateId('series', seriesName),
                     name:     seriesName,
                     active:   true,
-                    category: category || item.group,
+                    category: category,
                     type:     'series',
-                    isAdult:  isAdultGroup(item.group),
+                    isAdult:  isAdult,
                     logo:     item.logo || null,
                     episodes: {},
                 };
@@ -243,14 +256,24 @@ function categorizeM3UItems(items, limit) {
             if (seenMovieNames.has(normName)) continue;
             seenMovieNames.add(normName);
 
+            let finalCategory = category;
+            let isAdult = isAdultGroup(item.group);
+
+            if (item.name.includes('[XXX]')) {
+                finalCategory = 'Adultos';
+                isAdult = true;
+            } else if (item.name.includes('[L]') || item.name.includes('(L)')) {
+                finalCategory = 'legendado';
+            }
+
             movies.push({
                 id:       generateId('movie', item.name),
                 name:     item.name,
                 url:      item.url,
                 active:   true,
-                category,
+                category: finalCategory,
                 type:     'movie',
-                isAdult:  isAdultGroup(item.group),
+                isAdult:  isAdult,
                 logo:     item.logo || null,
             });
         }
