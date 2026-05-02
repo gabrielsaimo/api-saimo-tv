@@ -6,6 +6,16 @@ Sistema automatizado para buscar, categorizar e enriquecer conteúdo de M3U e ge
 
 ## 🚀 GUIA COMPLETO: Do Zero ao Supabase
 
+### ⚡ Comando Rápido (Faz tudo de uma vez)
+
+Se você já instalou as dependências (`npm install`) e configurou o `.env`, basta rodar este comando para executar todo o pipeline (baixar, processar, dividir em partes de 4MB e enviar para o Supabase):
+
+```bash
+node index.js && node split-sql.js 4 && node upload-supabase.js
+```
+
+---
+
 ### ⚙️ PASSO 1: Verificar Pré-requisitos
 
 ```bash
@@ -378,6 +388,13 @@ const CATEGORY_MAP = {
 
 ## 📌 Fluxo Resumido (Cheat Sheet)
 
+### 🚀 O Comando Mágico (Faz tudo)
+Se o ambiente já estiver configurado, rode apenas:
+```bash
+node index.js && node split-sql.js 4 && node upload-supabase.js
+```
+
+### Passo a Passo Detalhado
 ```bash
 # 1. Verificar Node
 node --version  # v24+ recomendado
