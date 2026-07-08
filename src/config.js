@@ -2,9 +2,7 @@
 
 // URLs do M3U para buscar conteúdo
 const M3U_URLS = [
-    'https://raw.githubusercontent.com/Ramys/Iptv-Brasil-2026/refs/heads/master/CanaisBR02.m3u8',
     'https://raw.githubusercontent.com/Ramys/Iptv-Brasil-2026/refs/heads/master/CanaisBR03.m3u8',
-    'https://raw.githubusercontent.com/Ramys/Iptv-Brasil-2026/refs/heads/master/CanaisBR05.m3u8',
     // Adicione mais URLs aqui se necessário:
     // 'https://exemplo.com/outro.m3u',
 ];
